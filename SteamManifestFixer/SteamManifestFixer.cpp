@@ -106,8 +106,9 @@ uintptr_t GetPatchAddress(HANDLE processHandle, uint32_t address, uint32_t size)
 	))
 	{
 		std::vector<uint8_t> egg = {
-			0x84, 0xC0, 
-			0x0F, 0x85, 0x2E, 0xFF, 0xFF, 0xFF	
+			0x00, 0x00, 0xFF, 0xD0, 0x84, 0xC0,
+			0x74, 0x29,
+			0xFF, 0x75, 0x14, 0xFF, 0x75, 0x10
 		};
 
 		std::vector<uint8_t> image(buffer, buffer + bytesRead);
@@ -125,7 +126,7 @@ uintptr_t GetPatchAddress(HANDLE processHandle, uint32_t address, uint32_t size)
 		{
 			uintptr_t offset = it - image.begin();
 
-			return address + offset + 2;
+			return address + offset + 6;
 		}
 		else 
 		{
@@ -157,7 +158,7 @@ bool WritePatch(HANDLE processHandle, uintptr_t imageBase, uint32_t imageSize, u
 	}
 
 	std::vector<uint8_t> patch = {
-		0x0F, 0x84, 0x2E, 0xFF, 0xFF, 0xFF
+		0x90, 0x90
 	};
 
 	SIZE_T bytesWritten;
