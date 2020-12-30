@@ -17,8 +17,10 @@ uint32_t GetProcessIdByName(std::string processName)
 			}
 		}
 	}
-	
-	return -1;
+
+	std::cerr << "Unable to locate the " << processName << " process. Is it running?" << std::endl;
+
+	throw std::runtime_error("GetProcessIdByName failed.");
 }
 
 HMODULE GetHandleForModule(HANDLE processHandle, std::string targetModule)
@@ -66,12 +68,12 @@ HMODULE GetHandleForModule(HANDLE processHandle, std::string targetModule)
 	}
 	else 
 	{
-		std::cout << "Unable to enumerate process modules." << std::endl;
+		std::cerr << "Unable to enumerate process modules." << std::endl;
 
 		throw std::runtime_error("EnumProcessModulesEx failed.");
 	}
 
-	std::cout << "Unable to find moduleHandle for processHandle: " << processHandle << ", with target: " << targetModule << std::endl;
+	std::cerr << "Unable to find moduleHandle for processHandle: " << processHandle << ", with target: " << targetModule << std::endl;
 
 	throw std::runtime_error("EnumProcessModules failed.");
 }
@@ -130,8 +132,13 @@ uintptr_t GetPatchAddress(HANDLE processHandle, uint32_t address, uint32_t size)
 		}
 		else 
 		{
-			std::cerr << "Read process memory, but was unable to find egg." << std::endl;
+			std::cerr << "Read process memory, but was unable to find egg." << std::endl
+			          << "It is possible that it has already been patched, or "
+			             "your version of the Steam Client is not supported by "
+			             "this SteamManifestFixer. Please open an issue on GitHub "
+			             "if you are sure you did everything correctly." << std::endl;
 
+			std::getchar();
 			throw std::runtime_error("Unable to find egg.");
 		}
 	}
